@@ -9,9 +9,11 @@ book:
 
   chapters:
     - index.qmd
-    - intro.qmd
-    - summary.qmd
-    - references.qmd
+    - Test.ipynb
+    - crawling_berita.ipynb
+    - Closeness_Centrality.ipynb
+    - LDA_Topic_Modelling_PTA.ipynb
+    - Ektraksi_Kata_Kunci.ipynb
 
 bibliography: references.bib
 

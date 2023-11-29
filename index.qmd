@@ -11,10 +11,4 @@ This is a Quarto book.
 
 To learn more about Quarto books visit <https://quarto.org/docs/books>.
 
-
-## Acknowledgments {.unnumbered}
-
-Blah, blah, blah...
-
-
 \mainmatter

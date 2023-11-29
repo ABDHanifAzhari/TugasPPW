@@ -8,7 +8,6 @@
 ]{krantz}
 
 \usepackage{amsmath,amssymb}
-\usepackage{lmodern}
 \usepackage{iftex}
 \ifPDFTeX
   \usepackage[T1]{fontenc}
@@ -18,6 +17,10 @@
   \usepackage{unicode-math}
   \defaultfontfeatures{Scale=MatchLowercase}
   \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else  
+    % xetex/luatex font selection
 \fi
 % Use upquote if available, for straight quotes in verbatim environments
 \IfFileExists{upquote.sty}{\usepackage{upquote}}{}
@@ -236,10 +239,12 @@
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
 \makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[many]{tcolorbox}}
+\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
 \makeatother
 \makeatletter
 \@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
+\makeatother
+\makeatletter
 \makeatother
 \makeatletter
 \makeatother
@@ -261,7 +266,7 @@
 
 \title{Quarto CRC Book}
 \author{Jane Doe and Max Power}
-\date{11/22/22}
+\date{2022-11-22}
 
 \begin{document}
 \maketitle
@@ -280,7 +285,7 @@ To blah, blah, and blah.
 \setlength{\abovedisplayskip}{-5pt}
 \setlength{\abovedisplayshortskip}{-5pt}
 
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, interior hidden, borderline west={3pt}{0pt}{shadecolor}, boxrule=0pt, frame hidden, enhanced, breakable]}{\end{tcolorbox}}\fi
+\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[sharp corners, enhanced, interior hidden, borderline west={3pt}{0pt}{shadecolor}, breakable, frame hidden, boxrule=0pt]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -317,55 +322,246 @@ This is a Quarto book.
 To learn more about Quarto books visit
 \url{https://quarto.org/docs/books}.
 
-\hypertarget{acknowledgments}{%
-\section*{Acknowledgments}\label{acknowledgments}}
-\addcontentsline{toc}{section}{Acknowledgments}
-
-\markright{Acknowledgments}
-
-Blah, blah, blah\ldots{}
-
 \mainmatter
 
 \bookmarksetup{startatroot}
 
-\hypertarget{introduction}{%
-\chapter{Introduction}\label{introduction}}
-
-This is a book created from markdown\index{markdown} and executable
-code.
-
-Here's a basic plot:
+\hypertarget{closeness-centrality}{%
+\chapter{Closeness Centrality}\label{closeness-centrality}}
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
-\ImportTok{import}\NormalTok{ matplotlib.pyplot }\ImportTok{as}\NormalTok{ plt}
+\OperatorTok{!}\NormalTok{pip install networkx}
+\end{Highlighting}
+\end{Shaded}
 
-\NormalTok{r }\OperatorTok{=}\NormalTok{ np.arange(}\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{, }\FloatTok{0.01}\NormalTok{)}
-\NormalTok{theta }\OperatorTok{=} \DecValTok{2} \OperatorTok{*}\NormalTok{ np.pi }\OperatorTok{*}\NormalTok{ r}
-\NormalTok{fig, ax }\OperatorTok{=}\NormalTok{ plt.subplots(}
-\NormalTok{  subplot\_kw }\OperatorTok{=}\NormalTok{ \{}\StringTok{\textquotesingle{}projection\textquotesingle{}}\NormalTok{: }\StringTok{\textquotesingle{}polar\textquotesingle{}}\NormalTok{\} }
-\NormalTok{)}
-\NormalTok{ax.plot(theta, r)}
-\NormalTok{ax.set\_rticks([}\FloatTok{0.5}\NormalTok{, }\DecValTok{1}\NormalTok{, }\FloatTok{1.5}\NormalTok{, }\DecValTok{2}\NormalTok{])}
-\NormalTok{ax.grid(}\VariableTok{True}\NormalTok{)}
-\NormalTok{plt.show()}
+\begin{verbatim}
+Requirement already satisfied: networkx in /usr/local/lib/python3.10/dist-packages (3.2)
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ImportTok{import}\NormalTok{ pandas }\ImportTok{as}\NormalTok{ pd}
+\ImportTok{import}\NormalTok{ numpy }\ImportTok{as}\NormalTok{ np}
+\ImportTok{from}\NormalTok{ nltk.corpus }\ImportTok{import}\NormalTok{ stopwords}
+\ImportTok{import}\NormalTok{ re}
+\ImportTok{import}\NormalTok{ nltk}
+\NormalTok{nltk.download(}\StringTok{\textquotesingle{}stopwords\textquotesingle{}}\NormalTok{)}
+\NormalTok{nltk.download(}\StringTok{\textquotesingle{}wordnet\textquotesingle{}}\NormalTok{)}
+\NormalTok{nltk.download(}\StringTok{\textquotesingle{}punkt\textquotesingle{}}\NormalTok{)}
+\CommentTok{\# from Sastrawi.Stemmer.StemmerFactory import StemmerFactory}
+\ImportTok{from}\NormalTok{ nltk.tokenize }\ImportTok{import}\NormalTok{ sent\_tokenize, word\_tokenize}
+\ImportTok{from}\NormalTok{ nltk.corpus }\ImportTok{import}\NormalTok{ stopwords}
+\ImportTok{from}\NormalTok{ sklearn.feature\_extraction.text }\ImportTok{import}\NormalTok{ TfidfVectorizer}
+\ImportTok{from}\NormalTok{ sklearn.metrics.pairwise }\ImportTok{import}\NormalTok{ cosine\_similarity}
+\ImportTok{import}\NormalTok{ networkx }\ImportTok{as}\NormalTok{ nx}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+[nltk_data] Downloading package stopwords to /root/nltk_data...
+[nltk_data]   Unzipping corpora/stopwords.zip.
+[nltk_data] Downloading package wordnet to /root/nltk_data...
+[nltk_data] Downloading package punkt to /root/nltk_data...
+[nltk_data]   Unzipping tokenizers/punkt.zip.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{data }\OperatorTok{=}\NormalTok{ pd.read\_csv(}\StringTok{\textquotesingle{}/content/drive/MyDrive/ppw/ppw/crawling\_berita\_new.csv\textquotesingle{}}\NormalTok{)}
+\NormalTok{data}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& Judul & Isi & Kategori \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & Debut IMAG Sukses, KONI Pusat: Tahun Depan Leb... & Pekan Olahraga
+Bela Diri Nasional atau Indones... & Sport \\
+1 & Nikmati Pengalaman Santap Steak Lezat di Mad C... & Suasana yang
+nyaman dengan makanan lezat, inil... & Food \\
+2 & Arus Barang Impor Jadi Diperketat, Masa Transi... & Pemerintah terus
+melakukan sejumlah upaya untu... & Finance \\
+3 & Jorge Martin Promosi ke Ducati di 2024? & Rider Pramac Jorge Martin
+muncul sebagai penan... & Sport \\
+4 & Water Purifier Tenaga Surya Menangkan AHM Best... & Jakarta - PT
+Astra Honda Motor menggelar AHM B... & Edukasi \\
+... & ... & ... & ... \\
+155 & Sempat Mangkrak, Proyek Tol Gilimanuk-Mengwi B... & Pemerintah
+akan segera melelang ulang proyek T... & Finance \\
+156 & Pahami Perbedaan Tekstil, Garmen, dan Konveksi & Bisnis pakaian
+adalah salah satu bisnis yang s... & Finance \\
+157 & Gado-gado Racikan Mak Gobang yang Terkenal di BSD & Jakarta - Gado
+Gado Mak Gobang yang dulunya be... & Food \\
+158 & Harta Karun Migas Papua Sudah Dilelang, Diinca... & Kementerian
+Energi dan Sumber Daya Mineral (ES... & Finance \\
+159 & Megawati Hangestri: Si Pevoli Viral Indonesia ... & Megawati
+Hangestri Pertiwi terus menjadi perbi... & Sport \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{hasil\_kalimat}\OperatorTok{=}\NormalTok{[]}
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\BuiltInTok{len}\NormalTok{(data)):}
+\NormalTok{  token }\OperatorTok{=}\NormalTok{ sent\_tokenize(data[}\StringTok{\textquotesingle{}Isi\textquotesingle{}}\NormalTok{][i])}
+\NormalTok{  hasil\_kalimat.append(token)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{kalimat }\OperatorTok{=}\NormalTok{ []}
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\BuiltInTok{len}\NormalTok{(hasil\_kalimat)):}
+  \ControlFlowTok{for}\NormalTok{ x }\KeywordTok{in} \BuiltInTok{range}\NormalTok{ (}\BuiltInTok{len}\NormalTok{(hasil\_kalimat[i])):}
+\NormalTok{    datacek }\OperatorTok{=}\NormalTok{ []}
+\NormalTok{    datacek.append(i)}
+\NormalTok{    datacek.append(hasil\_kalimat[i][x])}
+\NormalTok{    kalimat.append(datacek)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{databaru }\OperatorTok{=}\NormalTok{ pd.DataFrame(kalimat, columns}\OperatorTok{=}\NormalTok{[}\StringTok{"Dokumen ke"}\NormalTok{, }\StringTok{"Kalimat"}\NormalTok{])}
+\NormalTok{databaru}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}lll@{}}
+\toprule\noalign{}
+& Dokumen ke & Kalimat \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & Pekan Olahraga Bela Diri Nasional atau Indones... \\
+1 & 0 & KONI Pusat menjanjikan tahun depan lebih menarik. \\
+2 & 0 & IMAG pertama diselenggarakan di Kota Bekasi da... \\
+3 & 0 & Ajang ini mempertandingkan 9 cabang olahraga b... \\
+4 & 0 & Hasilnya, kontingen Jawa Barat menjadi juara u... \\
+... & ... & ... \\
+3459 & 159 & Megawati berhasil mengumpulkan 95 poin, jumlah... \\
+3460 & 159 & Bahkan, ia menjadi pencetak poin terbanyak yai... \\
+3461 & 159 & Adapun Red Sparks telah memenangkan tiga dari ... \\
+3462 & 159 & Red Sparks dijadwalkan akan bertanding kembali... \\
+3463 & 159 & Megawati dkk akan menghadapi Gimcheon Korea Ex... \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Menghitung TF{-}IDF}
+\NormalTok{vectorizer }\OperatorTok{=}\NormalTok{ TfidfVectorizer()}
+\NormalTok{tfidf\_matrix }\OperatorTok{=}\NormalTok{ vectorizer.fit\_transform(databaru[}\StringTok{\textquotesingle{}Kalimat\textquotesingle{}}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Menghitung cosine similarity}
+\NormalTok{cosine\_similarities }\OperatorTok{=}\NormalTok{ cosine\_similarity(tfidf\_matrix, tfidf\_matrix)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Membuat graf untuk closeness centrality}
+\NormalTok{G }\OperatorTok{=}\NormalTok{ nx.from\_numpy\_array(cosine\_similarities)}
+
+\CommentTok{\# Menghitung closeness centrality}
+\NormalTok{closeness\_centrality }\OperatorTok{=}\NormalTok{ nx.closeness\_centrality(G)}
+
+\CommentTok{\# Menambahkan closeness centrality ke dalam dataframe kalimat}
+\NormalTok{databaru[}\StringTok{\textquotesingle{}Closeness Centrality\textquotesingle{}}\NormalTok{] }\OperatorTok{=}\NormalTok{ [closeness\_centrality[i] }\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in} \BuiltInTok{range}\NormalTok{(}\BuiltInTok{len}\NormalTok{(databaru))]}
+
+\CommentTok{\# Menampilkan dataframe kalimat}
+\BuiltInTok{print}\NormalTok{(databaru)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+      Dokumen ke                                            Kalimat  \
+0              0  Pekan Olahraga Bela Diri Nasional atau Indones...   
+1              0  KONI Pusat menjanjikan tahun depan lebih menarik.   
+2              0  IMAG pertama diselenggarakan di Kota Bekasi da...   
+3              0  Ajang ini mempertandingkan 9 cabang olahraga b...   
+4              0  Hasilnya, kontingen Jawa Barat menjadi juara u...   
+...          ...                                                ...   
+3459         159  Megawati berhasil mengumpulkan 95 poin, jumlah...   
+3460         159  Bahkan, ia menjadi pencetak poin terbanyak yai...   
+3461         159  Adapun Red Sparks telah memenangkan tiga dari ...   
+3462         159  Red Sparks dijadwalkan akan bertanding kembali...   
+3463         159  Megawati dkk akan menghadapi Gimcheon Korea Ex...   
+
+      Closeness Centrality  
+0                 0.542064  
+1                 0.514661  
+2                 0.649923  
+3                 0.556842  
+4                 0.547535  
+...                    ...  
+3459              0.492301  
+3460              0.711714  
+3461              0.681515  
+3462              0.539237  
+3463              0.581197  
+
+[3464 rows x 3 columns]
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{databaru}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{longtable}[]{@{}llll@{}}
+\toprule\noalign{}
+& Dokumen ke & Kalimat & Closeness Centrality \\
+\midrule\noalign{}
+\endhead
+\bottomrule\noalign{}
+\endlastfoot
+0 & 0 & Pekan Olahraga Bela Diri Nasional atau Indones... & 0.542064 \\
+1 & 0 & KONI Pusat menjanjikan tahun depan lebih menarik. & 0.514661 \\
+2 & 0 & IMAG pertama diselenggarakan di Kota Bekasi da... & 0.649923 \\
+3 & 0 & Ajang ini mempertandingkan 9 cabang olahraga b... & 0.556842 \\
+4 & 0 & Hasilnya, kontingen Jawa Barat menjadi juara u... & 0.547535 \\
+... & ... & ... & ... \\
+3459 & 159 & Megawati berhasil mengumpulkan 95 poin, jumlah... &
+0.492301 \\
+3460 & 159 & Bahkan, ia menjadi pencetak poin terbanyak yai... &
+0.711714 \\
+3461 & 159 & Adapun Red Sparks telah memenangkan tiga dari ... &
+0.681515 \\
+3462 & 159 & Red Sparks dijadwalkan akan bertanding kembali... &
+0.539237 \\
+3463 & 159 & Megawati dkk akan menghadapi Gimcheon Korea Ex... &
+0.581197 \\
+\end{longtable}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{databaru.to\_csv(}\StringTok{\textquotesingle{}/content/drive/MyDrive/ppw/ppw/closeness\_centrality.csv\textquotesingle{}}\NormalTok{, index}\OperatorTok{=}\VariableTok{False}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nx.draw(G, with\_labels}\OperatorTok{=}\VariableTok{True}\NormalTok{)}
 \end{Highlighting}
 \end{Shaded}
 
 \begin{figure}[H]
 
-{\centering \includegraphics{./intro_files/figure-pdf/fig-polar-output-1.pdf}
+{\centering \includegraphics{Test_files/figure-pdf/cell-13-output-1.png}
 
 }
 
-\caption{\label{fig-polar}A line plot on a polar axis.}
-
 \end{figure}
-
-See Knuth (1984) for additional discussion of literate
-programming\index{literate programming}.
 
 \bookmarksetup{startatroot}
 
@@ -383,11 +579,7 @@ In summary, this book has no content whatsoever.
 \markboth{References}{References}
 
 \hypertarget{refs}{}
-\begin{CSLReferences}{1}{0}
-\leavevmode\vadjust pre{\hypertarget{ref-knuth84}{}}%
-Knuth, Donald E. 1984. {``Literate Programming.''} \emph{Comput. J.} 27
-(2): 97--111. \url{https://doi.org/10.1093/comjnl/27.2.97}.
-
+\begin{CSLReferences}{0}{0}
 \end{CSLReferences}
 
 
