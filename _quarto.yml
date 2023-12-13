@@ -2,9 +2,9 @@ project:
   type: book
 
 book:
-  title: "Quarto CRC Book"
+  title: "Pencarian & Penambangan Web A"
   output-file: "quarto-crc"
-  author: "Jane Doe and Max Power"
+  author: "Abd. Hanif Azhari"
   date: "11/22/2022"
 
   chapters:
@@ -14,6 +14,7 @@ book:
     - Closeness_Centrality.ipynb
     - LDA_Topic_Modelling_PTA.ipynb
     - Ektraksi_Kata_Kunci.ipynb
+    - UAS.ipynb
 
 bibliography: references.bib
 

@@ -1,14 +1,13 @@
-# Preface {.unnumbered}
+## Introduction {.unnumbered}
 
-This is a Quarto book.
+Selamat Datang di Web Statis Pencarian & Penambangan Web A!!
+Nama  : Abd. Hanif Azhari
+NIM   : 200411100101
+
+Drive PPW <https://drive.google.com/drive/folders/1c2MGQ-WXxKUREWZ4v0I7TNRzUlg1UrF3?usp=sharing>
+
+Streamlit UAS <https://uasppw-4etdra6zzpxagvkw3rwnfp.streamlit.app//>
 
 
-## Software conventions {.unnumbered}
-
-```{python}
-1 + 1
-```
-
-To learn more about Quarto books visit <https://quarto.org/docs/books>.
 
 \mainmatter
